@@ -137,3 +137,65 @@ Ab aapko GenericBottomSheet har jagah import karne ki zarurat nahi hai.
 showSheet state Layout me centralized hai.
 Aap content ko slot ke through easily customize kar sakte ho (promo image, heading, buttons, etc.).
 Future me agar multiple promos chahiye, aap v-if / v-for ke through multiple sheets bhi manage kar sakte ho.
+
+📌 Notes
+---------------------------------------------------------------------------------------------------
+Yadi aap chahte ho ki har page par navigate kro aur na bottom sheet execute ho just update <script> of your [01]
+
+😄 Your explanation about localStorage vs sessionStorage is spot on:
+localStorage → persists across browser sessions. Sheet will never show again once the flag is set.
+
+sessionStorage → only lasts for the current tab/session. Sheet will show again in the next browser session.
+Now, for your GenericBottomSheet.vue, you can make it dual-option with a prop, e.g., storageType: { type: String, default: "local" } (accepts "local" or "session"). Here’s how you can adjust your code:
+
+true  -> Execute each and every time during page to page navigation
+false -> Executes once
+
+      <script>
+            export default {
+              name: "GenericBottomSheet",
+              props: {
+                show: { type: Boolean, default: false },
+                autoShowDelay: { type: Number, default: null }, // ms
+                mobileOnly: { type: Boolean, default: true },
+                storageType: { type: String, default: "local" }, // "local" or "session"
+                storageKey: { type: String, default: "bottomSheetShown" },
+              },
+              data() {
+                return {
+                  isVisible: this.show,
+                };
+              },
+              watch: {
+                show(val) {
+                  this.isVisible = val;
+                },
+              },
+              mounted() {
+                if (this.mobileOnly && !this.isMobileDevice()) return;
+            
+                const storage =
+                  this.storageType === "session" ? sessionStorage : localStorage;
+            
+                if (storage.getItem(this.storageKey) === "true") return;
+            
+                if (this.autoShowDelay) {
+                  setTimeout(() => {
+                    this.isVisible = true;
+                    this.$emit("update:show", true);
+                    storage.setItem(this.storageKey, "true"); // ✅ flag set
+                  }, this.autoShowDelay);
+                }
+              },
+              methods: {
+                closeSheet() {
+                  this.isVisible = false;
+                  this.$emit("update:show", false);
+                },
+                isMobileDevice() {
+                  return window.innerWidth <= 768;
+                },
+              },
+            };
+       </script>
+
