@@ -7,6 +7,11 @@ Create a reusable file ImageZoomingLens.vue
         @mousemove="moveLens"
         @mouseenter="showLens"
         @mouseleave="hideLens"
+    
+        @touchstart.prevent="showLensTouch"
+        @touchmove.prevent="moveLensTouch"
+        @touchend="hideLens"
+    
         :style="{ width: '100%', height: '100%', position: 'relative' }"
       >
         <!-- Original Image -->
@@ -16,7 +21,7 @@ Create a reusable file ImageZoomingLens.vue
         <div
           v-if="isZooming"
           ref="lens"
-          class="absolute border-2 border-green-500 rounded-full pointer-events-none"
+          class="absolute border-2 border-green-500 rounded-md pointer-events-none"
           :style="lensStyle"
         ></div>
       </div>
@@ -46,9 +51,15 @@ Create a reusable file ImageZoomingLens.vue
     
     function moveLens(e) {
       const containerRect = container.value.getBoundingClientRect();
-      const lensSize = 120;                                               // lens ka size
-      const x = e.clientX - containerRect.left;
-      const y = e.clientY - containerRect.top;
+      const lensSize = 250; // lens ka size
+    
+      // mouse ya touch dono ke liye clientX/clientY nikaalna
+      const clientX = e.clientX ?? e.touches?.[0]?.clientX;
+      const clientY = e.clientY ?? e.touches?.[0]?.clientY;
+      if (!clientX || !clientY) return;
+    
+      const x = clientX - containerRect.left;
+      const y = clientY - containerRect.top;
     
       // lens ka center calculation
       let lensX = x - lensSize / 2;
@@ -79,11 +90,25 @@ Create a reusable file ImageZoomingLens.vue
         backgroundPosition: `${bgX}% ${bgY}%`,
       };
     }
+    
+    // 👇 Touch events
+    function showLensTouch(e) {
+      isZooming.value = true;
+      moveLens(e); // start me hi lens position set kar do
+    }
+    
+    function moveLensTouch(e) {
+      moveLens(e);
+    }
     </script>
     
     <style scoped>
-    /* lens ko circular rakhna */
+    /* lens ko circular rakhna ho to: */
+    .lens {
+      border-radius: 50%;
+    }
     </style>
+
 
 Use this instead of simple image tag. First you need to import that ImageZoomingLens.vue like (
 import ZoomImage from "@/Components/Shared/ZoomImage.vue";) and than use it
