@@ -1,0 +1,95 @@
+Create a reusable file ImageZoomingLens.vue
+
+    <template>
+      <div
+        ref="container"
+        class="relative overflow-hidden"
+        @mousemove="moveLens"
+        @mouseenter="showLens"
+        @mouseleave="hideLens"
+        :style="{ width: '100%', height: '100%', position: 'relative' }"
+      >
+        <!-- Original Image -->
+        <img :src="src" :alt="alt" class="w-full h-full object-contain" />
+    
+        <!-- Lens (same container me zoom hoga) -->
+        <div
+          v-if="isZooming"
+          ref="lens"
+          class="absolute border-2 border-green-500 rounded-full pointer-events-none"
+          :style="lensStyle"
+        ></div>
+      </div>
+    </template>
+    
+    <script setup>
+    import { ref } from "vue";
+    
+    const props = defineProps({
+      src: String,
+      alt: String,
+      zoomLevel: { type: Number, default: 2 }, // zoom factor (2x, 3x, etc.)
+    });
+    
+    const container = ref(null);
+    const lens = ref(null);
+    const isZooming = ref(false);
+    const lensStyle = ref({});
+    
+    function showLens() {
+      isZooming.value = true;
+    }
+    
+    function hideLens() {
+      isZooming.value = false;
+    }
+    
+    function moveLens(e) {
+      const containerRect = container.value.getBoundingClientRect();
+      const lensSize = 120;                                               // lens ka size
+      const x = e.clientX - containerRect.left;
+      const y = e.clientY - containerRect.top;
+    
+      // lens ka center calculation
+      let lensX = x - lensSize / 2;
+      let lensY = y - lensSize / 2;
+    
+      // container ke andar hi lens rahe
+      if (lensX < 0) lensX = 0;
+      if (lensY < 0) lensY = 0;
+      if (lensX > containerRect.width - lensSize)
+        lensX = containerRect.width - lensSize;
+      if (lensY > containerRect.height - lensSize)
+        lensY = containerRect.height - lensSize;
+    
+      // lens background position calculation
+      const bgX = (x / containerRect.width) * 100;
+      const bgY = (y / containerRect.height) * 100;
+    
+      lensStyle.value = {
+        left: lensX + "px",
+        top: lensY + "px",
+        width: lensSize + "px",
+        height: lensSize + "px",
+        backgroundImage: `url(${props.src})`,
+        backgroundRepeat: "no-repeat",
+        backgroundSize: `${containerRect.width * props.zoomLevel}px ${
+          containerRect.height * props.zoomLevel
+        }px`,
+        backgroundPosition: `${bgX}% ${bgY}%`,
+      };
+    }
+    </script>
+    
+    <style scoped>
+    /* lens ko circular rakhna */
+    </style>
+
+Use this instead of simple image tag. First you need to import that ImageZoomingLens.vue like (
+import ZoomImage from "@/Components/Shared/ZoomImage.vue";) and than use it
+
+    <ZoomImage 
+      :src="mainImage"
+      :alt="product.name"
+      :zoom-level="3"
+    />
