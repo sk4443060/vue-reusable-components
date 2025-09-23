@@ -12,7 +12,7 @@ Create a reusable file ImageZoomingLens.vue
         @touchmove.prevent="moveLensTouch"
         @touchend="hideLens"
     
-        :style="{ width: '100%', height: '100%', position: 'relative' }"
+        :style="{ width: '100%', height: '85%', position: 'relative' }"
       >
         <!-- Original Image -->
         <img :src="src" :alt="alt" class="w-full h-full object-contain" />
