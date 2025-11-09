@@ -3,49 +3,51 @@ Create A file with name CategoryTabs.vue in laravel file directory resources/js/
     <template>
       <div class="relative bg-white shadow-md border-b">
         <!-- Tabs (scrollable top) -->
-        <div class="flex overflow-x-auto no-scrollbar px-4 py-2 space-x-4">
-          <button
-            v-for="cat in categories"
-            :key="cat.name"
-            :aria-expanded="activeCategory?.name === cat.name ? 'true' : 'false'"
-            class="flex items-center gap-2 px-3 py-2 rounded-lg whitespace-nowrap transition"
-            :class="activeCategory?.name === cat.name
-                     ? 'bg-[#65a30d] text-white'
-                     : 'hover:bg-[#facc15] text-gray-800'"
-            @click="onCategoryClick($event, cat)"
-          >
-            <!-- If you only have icon component -->
-            <!-- <component
-              :is="cat.icon"
-              class="w-5 h-5"
-              :class="activeCategory?.name === cat.name ? 'text-white' : 'text-[#65a30d]'"
-            /> -->
-    
-            <!-- OR -->
-    
-            <!-- You want to show either image URL or Vue icon component -->
-            <!-- Show Image if icon is URL -->
-            <template v-if="typeof cat.icon === 'string'">
-              <img
-                :src="cat.icon"
-                alt=""
-                class="w-5 h-5 rounded object-contain"
-              />
-            </template>
-    
-            <!-- AND Also use this block-->
-            <!-- Otherwise show Vue icon component -->
-            <template v-else>
-              <component
+        <div class="overflow-x-auto no-scrollbar px-4 py-2 ">
+          <div class="flex space-x-4 w-max">
+            <button
+              v-for="cat in categories"
+              :key="cat.name"
+              :aria-expanded="activeCategory?.name === cat.name ? 'true' : 'false'"
+              class="flex items-center gap-2 px-3 py-2 rounded-lg whitespace-nowrap transition border"
+              :class="activeCategory?.name === cat.name
+                      ? 'bg-[#65a30d] text-white'
+                      : 'hover:bg-[#facc15] text-gray-800'"
+              @click="onCategoryClick($event, cat)"
+            >
+              <!-- If you only have icon component -->
+              <!-- <component
                 :is="cat.icon"
                 class="w-5 h-5"
                 :class="activeCategory?.name === cat.name ? 'text-white' : 'text-[#65a30d]'"
-              />
-            </template>
+              /> -->
+    
+              <!-- OR -->
+    
+              <!-- You want to show either image URL or Vue icon component -->
+              <!-- Show Image if icon is URL -->
+              <template v-if="typeof cat.icon === 'string'">
+                <img
+                  :src="cat.icon"
+                  alt=""
+                  class="w-5 h-5 rounded object-contain"
+                />
+              </template>
+    
+              <!-- AND Also use this block-->
+              <!-- Otherwise show Vue icon component -->
+              <template v-else>
+                <component
+                  :is="cat.icon"
+                  class="w-5 h-5"
+                  :class="activeCategory?.name === cat.name ? 'text-white' : 'text-[#65a30d]'"
+                />
+              </template>
     
     
-            <span class="font-medium text-sm">{{ cat.name }}</span>
-          </button>
+              <span class="font-medium text-sm">{{ cat.name }}</span>
+            </button>
+          </div>
         </div>
     
         <!-- Dropdown via Teleport -->
@@ -146,7 +148,7 @@ Create A file with name CategoryTabs.vue in laravel file directory resources/js/
     
     <script setup>
     import { ref, reactive, nextTick, watch, onMounted, onBeforeUnmount } from 'vue'
-    import { Home, Tag, CreditCard, Printer, PenTool, FileText, Layers, BookOpen } from 'lucide-vue-next'
+    import { Home, Tag, CreditCard, Printer, PenTool, FileText, Layers, BookOpen, ShoppingCart } from 'lucide-vue-next'
     import { router } from '@inertiajs/vue3'
     
     /* Main Categories Tabs */
@@ -155,7 +157,8 @@ Create A file with name CategoryTabs.vue in laravel file directory resources/js/
       
       // If there is sub-categories in category than use like this
       // NOTE: You need to map sub-sub category or Reactive Sub-sub category mapping
-      { name: "Grocery", icon: "https://placehold.co/48x48", children: [
+      { name: "Grocery", icon: "/assets/gif/hot-deal-fire.gif", children: [
+      // { name: "Grocery", icon: ShoppingCart, children: [
           { name: "Foodgrains, Oil & Masala", image: "https://placehold.co/400" },
           { name: "Fruits & Vegetables", image: "https://placehold.co/400" },
           { name: "Exotic Fruits & Veggies", image: "https://placehold.co/400" },
@@ -294,6 +297,7 @@ Create A file with name CategoryTabs.vue in laravel file directory resources/js/
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
+
 
 Now navigate into the main AppLayout.vue file (For now: resources/js/Components/Layouts.vue)
 Import this file and use it as:
